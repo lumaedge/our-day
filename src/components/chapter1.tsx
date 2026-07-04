@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import { Section, ChapterTitle } from "./section"
-import { Clock, MapPin } from "lucide-react"
+import { MapPin } from "lucide-react"
 import { useState, useEffect } from "react"
 
 export function Chapter1() {
@@ -21,6 +21,14 @@ export function Chapter1() {
     return () => clearInterval(interval)
   }, [])
 
+  const hours = time.getHours() % 12
+  const minutes = time.getMinutes()
+  const seconds = time.getSeconds()
+
+  const hourDeg = (hours + minutes / 60) * 30
+  const minuteDeg = (minutes + seconds / 60) * 6
+  const secondDeg = seconds * 6
+
   const dateStr = time.toLocaleDateString("en-ZA", {
     weekday: "long",
     year: "numeric",
@@ -28,12 +36,9 @@ export function Chapter1() {
     day: "numeric",
   })
 
-  const timeStr = time.toLocaleTimeString("en-ZA", {
-    hour: "2-digit",
-    minute: "2-digit",
-  })
-
-  const seconds = time.getSeconds()
+  const cx = 80
+  const cy = 80
+  const r = 70
 
   return (
     <Section id="chapter1">
@@ -44,33 +49,61 @@ export function Chapter1() {
           className="mb-12"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          transition={{ duration: 1.5 }}
+          transition={{ duration: 2 }}
         >
-          <div className="relative mx-auto mb-6 flex h-32 w-32 items-center justify-center">
-            <svg className="absolute inset-0 h-full w-full -rotate-90" viewBox="0 0 128 128">
-              <circle
-                cx="64"
-                cy="64"
-                r="58"
-                fill="none"
-                stroke="rgba(255,255,255,0.06)"
-                strokeWidth="2"
-              />
-              <motion.circle
-                cx="64"
-                cy="64"
-                r="58"
-                fill="none"
-                stroke="rgba(255,255,255,0.3)"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeDasharray={`${(seconds / 60) * 364.4} 364.4`}
-                transition={{ duration: 0.5 }}
-              />
+          <div className="relative mx-auto mb-8 flex h-40 w-40 items-center justify-center">
+            <svg className="absolute inset-0 h-full w-full" viewBox="0 0 160 160">
+              <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
+              {Array.from({ length: 12 }).map((_, i) => {
+                const angle = (i * 30 * Math.PI) / 180
+                const inner = r - 8
+                const outer = r
+                const x1 = cx + inner * Math.sin(angle)
+                const y1 = cy - inner * Math.cos(angle)
+                const x2 = cx + outer * Math.sin(angle)
+                const y2 = cy - outer * Math.cos(angle)
+                return (
+                  <line
+                    key={i}
+                    x1={x1} y1={y1} x2={x2} y2={y2}
+                    stroke="rgba(255,255,255,0.15)"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                  />
+                )
+              })}
             </svg>
-            <span className="text-3xl font-light tracking-wider text-white/70">
-              {timeStr}
-            </span>
+
+            {/* Hour hand */}
+            <motion.div
+              className="absolute bottom-1/2 left-1/2 origin-bottom"
+              animate={{ rotate: `${hourDeg}deg` }}
+              transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
+            >
+              <div className="-ml-[1.5px] h-14 w-[3px] rounded-full bg-white/40" />
+            </motion.div>
+
+            {/* Minute hand */}
+            <motion.div
+              className="absolute bottom-1/2 left-1/2 origin-bottom"
+              animate={{ rotate: `${minuteDeg}deg` }}
+              transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
+            >
+              <div className="-ml-px h-[76px] w-[2px] rounded-full bg-white/30" />
+            </motion.div>
+
+            {/* Second hand */}
+            <motion.div
+              className="absolute bottom-1/2 left-1/2 origin-bottom"
+              animate={{ rotate: `${secondDeg}deg` }}
+              transition={{ duration: 0.5, ease: "linear" }}
+            >
+              <div className="-ml-px h-[82px] w-px bg-white/15" />
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 h-2.5 w-px bg-white/15" />
+            </motion.div>
+
+            {/* Center dot */}
+            <div className="absolute h-2 w-2 rounded-full bg-white/25" />
           </div>
 
           <div className="flex items-center justify-center gap-2 text-sm text-white/40">
@@ -85,10 +118,13 @@ export function Chapter1() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.5 }}
         >
-          <div className="flex items-center justify-center gap-2 text-white/30">
-            <Clock className="h-4 w-4" />
-            <span className="text-sm tracking-wide">{dateStr}</span>
-          </div>
+          <p className="text-sm tracking-wide text-white/30">{dateStr}</p>
+          <motion.div
+            className="mx-auto h-px w-16 bg-white/10"
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            transition={{ duration: 1.5, delay: 0.8 }}
+          />
           <p className="text-sm italic text-white/20">
             Every great story begins somewhere.
           </p>

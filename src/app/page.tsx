@@ -10,10 +10,12 @@ import { MemoryTimeline } from "@/components/memory-timeline"
 import { LiveStats } from "@/components/live-stats"
 import { HiddenNotes } from "@/components/hidden-notes"
 import { AmbientBackground } from "@/components/ambient-background"
+import { AmbientParticles } from "@/components/ambient-particles"
 import { MusicPlayer } from "@/components/music-player"
 import { PolaroidGallery } from "@/components/polaroid-gallery"
 import { MemoryJar } from "@/components/memory-jar"
 import { FinalChapter } from "@/components/final-chapter"
+import { ChapterProgress } from "@/components/chapter-progress"
 
 export default function Home() {
   const [loaded, setLoaded] = useState(false)
@@ -27,20 +29,26 @@ export default function Home() {
   return (
     <>
       <AmbientBackground />
+      <AmbientParticles />
       <HiddenNotes />
 
       {!begun ? (
-        <HeroSection onBegin={handleBegin} />
+        <div className="snap-container">
+          <HeroSection onBegin={handleBegin} />
+        </div>
       ) : (
-        <main>
-          <Chapter1 />
-          <Chapter2 />
-          <MemoryTimeline />
-          <PolaroidGallery />
-          <MemoryJar />
-          <LiveStats />
-          <FinalChapter />
-        </main>
+        <>
+          <ChapterProgress />
+          <main className="snap-container">
+            <Chapter1 />
+            <Chapter2 />
+            <MemoryTimeline />
+            <PolaroidGallery />
+            <MemoryJar />
+            <LiveStats />
+            <FinalChapter />
+          </main>
+        </>
       )}
 
       <ConversationCards />
