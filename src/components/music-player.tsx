@@ -1,39 +1,12 @@
 "use client"
 
 import { motion, AnimatePresence } from "framer-motion"
-import { Music, X } from "lucide-react"
-import { useState, useEffect } from "react"
-
-function extractPlaylistId(url: string): string | null {
-  if (!url) return null
-  const patterns = [
-    /spotify\.com\/playlist\/([a-zA-Z0-9]+)/,
-    /spotify:playlist:([a-zA-Z0-9]+)/,
-    /^([a-zA-Z0-9]{22})$/,
-  ]
-  for (const p of patterns) {
-    const m = url.match(p)
-    if (m) return m[1]
-  }
-  return null
-}
+import { Music, X, Volume2, VolumeX } from "lucide-react"
+import { useState } from "react"
 
 export function MusicPlayer() {
   const [isOpen, setIsOpen] = useState(false)
-  const [playlistUrl, setPlaylistUrl] = useState("")
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem("our-day-settings")
-      if (stored) {
-        const s = JSON.parse(stored)
-        if (s.spotifyPlaylist) setPlaylistUrl(s.spotifyPlaylist)
-      }
-    } catch {}
-  }, [])
-
-  const playlistId = extractPlaylistId(playlistUrl)
-  const embedUrl = playlistId ? `https://open.spotify.com/embed/playlist/${playlistId}` : null
+  const [isPlaying, setIsPlaying] = useState(false)
 
   return (
     <>
@@ -56,15 +29,14 @@ export function MusicPlayer() {
             onClick={() => setIsOpen(false)}
           >
             <motion.div
-              className="w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-black/60 backdrop-blur-2xl"
+              className="w-full max-w-sm rounded-2xl border border-white/10 bg-black/60 p-8 backdrop-blur-2xl"
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between px-5 pt-5 pb-3">
-                <h3 className="text-sm font-light text-white/60">Music</h3>
+              <div className="mb-6 flex items-center justify-between">
+                <h3 className="text-sm font-light text-white/60">Background Music</h3>
                 <button
                   onClick={() => setIsOpen(false)}
                   className="text-white/30 hover:text-white/60"
@@ -73,26 +45,39 @@ export function MusicPlayer() {
                 </button>
               </div>
 
-              {embedUrl ? (
-                <iframe
-                  src={embedUrl}
-                  width="100%"
-                  height="380"
-                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                  loading="lazy"
-                  className="border-0"
-                />
-              ) : (
-                <div className="flex flex-col items-center px-5 pb-8 pt-4 text-center">
-                  <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.02]">
-                    <Music className="h-6 w-6 text-white/20" />
-                  </div>
-                  <p className="text-sm font-light text-white/40">No playlist set</p>
-                  <p className="mt-1 text-xs text-white/20">
-                    Add a Spotify playlist link in the admin settings.
-                  </p>
-                </div>
-              )}
+              <div className="mb-6 flex justify-center">
+                <motion.div
+                  className="flex h-24 w-24 items-center justify-center rounded-full border border-white/10 bg-white/[0.03]"
+                  animate={isPlaying ? { scale: [1, 1.05, 1] } : {}}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <Music className="h-8 w-8 text-white/30" />
+                </motion.div>
+              </div>
+
+              <div className="mb-6 text-center">
+                <p className="text-sm text-white/50">Ambient Soundscape</p>
+                <p className="text-xs text-white/20">A gentle soundtrack for today</p>
+              </div>
+
+              <button
+                onClick={() => setIsPlaying(!isPlaying)}
+                className="mx-auto flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-6 py-2.5 text-sm text-white/50 transition-all hover:border-white/30 hover:text-white/70"
+              >
+                {isPlaying ? (
+                  <>
+                    <Volume2 className="h-4 w-4" /> Pause
+                  </>
+                ) : (
+                  <>
+                    <VolumeX className="h-4 w-4" /> Play
+                  </>
+                )}
+              </button>
+
+              <p className="mt-4 text-center text-[10px] text-white/15">
+                Music is muted by default. Custom playlists coming soon.
+              </p>
             </motion.div>
           </motion.div>
         )}
