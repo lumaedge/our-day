@@ -182,11 +182,28 @@ export function YouSaidYes({ onReveal }: { onReveal: () => void }) {
         {step === 2 && (
           <motion.div
             key="cta"
-            className="relative z-10"
+            className="relative z-10 max-w-lg"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
           >
+            <motion.p
+              className="mb-2 text-sm font-light leading-relaxed text-white/40"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1.2, delay: 0.3 }}
+            >
+              Today will pass. But the moments we share
+            </motion.p>
+            <motion.p
+              className="mb-10 text-sm font-light leading-relaxed text-white/40"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1.2, delay: 0.6 }}
+            >
+              will live here — in our memory basket.
+            </motion.p>
+
             <motion.button
               onClick={onReveal}
               className="group inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/5 px-8 py-4 text-sm tracking-wider text-white/60 uppercase backdrop-blur-xl transition-all hover:border-white/30 hover:bg-white/10 hover:text-white/80"
@@ -194,9 +211,9 @@ export function YouSaidYes({ onReveal }: { onReveal: () => void }) {
               whileTap={{ scale: 0.97 }}
               initial={{ opacity: 0, y: 15, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.6 }}
+              transition={{ duration: 0.8, delay: 1 }}
             >
-              Open invitation
+              Begin
               <motion.span
                 animate={{ x: [0, 5, 0] }}
                 transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
