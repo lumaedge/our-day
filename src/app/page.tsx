@@ -1,27 +1,51 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useEffect } from "react"
 import { YouSaidYes } from "@/components/you-said-yes"
-import { MemoryBasket } from "@/components/memory-basket"
+import { MemoryPhase } from "@/components/memory-phase"
 import { AmbientBackground } from "@/components/ambient-background"
 import { AmbientParticles } from "@/components/ambient-particles"
 import { MusicPlayer } from "@/components/music-player"
 
-export default function Home() {
-  const [phase, setPhase] = useState<"intro" | "experience">("intro")
+function isOnOrAfterDate(dateStr: string): boolean {
+  if (!dateStr) return false
+  const target = new Date(dateStr)
+  target.setHours(23, 59, 59, 999)
+  return Date.now() >= target.getTime()
+}
 
-  const handleReveal = useCallback(() => setPhase("experience"), [])
+export default function Home() {
+  const [unlocked, setUnlocked] = useState(false)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("our-day-settings")
+      if (stored) {
+        const s = JSON.parse(stored)
+        if (s.date) setUnlocked(isOnOrAfterDate(s.date))
+      }
+    } catch {}
+    setLoading(false)
+  }, [])
+
+  if (loading) return null
 
   return (
     <>
       <AmbientBackground />
       <AmbientParticles />
 
-      {phase === "intro" && <YouSaidYes onReveal={handleReveal} />}
-
-      {phase === "experience" && <MemoryBasket />}
+      {unlocked ? <MemoryPhase /> : <YouSaidYes />}
 
       <MusicPlayer />
+
+      <a
+        href="/admin"
+        className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2 text-[10px] tracking-wider text-white/10 transition-colors hover:text-white/30"
+      >
+        Admin
+      </a>
     </>
   )
 }
