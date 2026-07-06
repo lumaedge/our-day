@@ -34,17 +34,17 @@ export function YouSaidYes({ onReveal }: { onReveal: () => void }) {
   }, [])
 
   const advance = useCallback(() => {
-    if (locked || step >= 4) return
+    if (locked || step >= 2) return
     setLocked(true)
     setStep((s) => s + 1)
     setTimeout(() => setLocked(false), 1200)
   }, [locked, step])
 
-  const showHint = !locked && step < 4
+  const showHint = !locked && step < 2
 
   return (
     <section className="snap-section relative flex min-h-screen flex-col items-center justify-center px-6 text-center overflow-hidden select-none">
-      {step < 4 && <div className="absolute inset-0 z-20" onClick={advance} />}
+      {step < 2 && <div className="absolute inset-0 z-20" onClick={advance} />}
 
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(255,255,255,0.02)_0%,_transparent_70%)]" />
 
@@ -142,77 +142,22 @@ export function YouSaidYes({ onReveal }: { onReveal: () => void }) {
                 animate={{ scaleX: 1 }}
                 transition={{ duration: 1, delay: 2 }}
               />
-            </motion.div>
-          </motion.div>
-        )}
-
-        {step === 2 && (
-          <motion.div
-            key="signature"
-            className="relative z-10 w-full max-w-xl"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }}
-            transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
-          >
-            <motion.p
-              className="text-xs tracking-[0.3em] text-white/20 uppercase mb-8"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6 }}
-            >
-              {date}
-            </motion.p>
-
-            <motion.div
-              className="rounded-2xl border border-white/[0.08] bg-white/[0.02] px-8 py-10 backdrop-blur-sm"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6 }}
-            >
-              <div className="mx-auto mb-8 h-px w-12 bg-white/15" />
-
-              <p className="text-lg font-light leading-relaxed text-white/60 sm:text-xl">
-                &ldquo;{message}&rdquo;
-              </p>
 
               {yourName && (
                 <motion.p
                   className="mt-6 text-sm text-white/30"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 1.2, delay: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+                  transition={{ duration: 1.2, delay: 2.4, ease: [0.25, 0.1, 0.25, 1] }}
                 >
                   — {yourName}
                 </motion.p>
               )}
-
-              <div className="mx-auto mt-8 h-px w-12 bg-white/15" />
             </motion.div>
           </motion.div>
         )}
 
-        {step === 3 && (
-          <motion.div
-            key="waiting"
-            className="relative z-10"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20, filter: "blur(6px)" }}
-            transition={{ duration: 1.2, ease: [0.25, 0.1, 0.25, 1] }}
-          >
-            <motion.p
-              className="text-lg font-light text-white/40"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1.5, delay: 0.4 }}
-            >
-              This is the part I&apos;ve been waiting to show you.
-            </motion.p>
-          </motion.div>
-        )}
-
-        {step === 4 && (
+        {step === 2 && (
           <motion.div
             key="cta"
             className="relative z-10"
@@ -220,15 +165,6 @@ export function YouSaidYes({ onReveal }: { onReveal: () => void }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
           >
-            <motion.p
-              className="mb-10 text-lg font-light text-white/40"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1, delay: 0.3 }}
-            >
-              This is the part I&apos;ve been waiting to show you.
-            </motion.p>
-
             <motion.button
               onClick={onReveal}
               className="group inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/5 px-8 py-4 text-sm tracking-wider text-white/60 uppercase backdrop-blur-xl transition-all hover:border-white/30 hover:bg-white/10 hover:text-white/80"
