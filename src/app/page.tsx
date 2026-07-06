@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import { LoadingScreen } from "@/components/loading-screen"
 import { YouSaidYes } from "@/components/you-said-yes"
 import { HeroSection } from "@/components/hero-section"
 import { Chapter1 } from "@/components/chapter1"
@@ -19,9 +18,8 @@ import { FinalChapter } from "@/components/final-chapter"
 import { ChapterProgress } from "@/components/chapter-progress"
 
 export default function Home() {
-  const [phase, setPhase] = useState<"loading" | "intro" | "hero" | "experience">("loading")
+  const [phase, setPhase] = useState<"intro" | "hero" | "experience">("intro")
 
-  const handleLoadComplete = useCallback(() => setPhase("intro"), [])
   const handleReveal = useCallback(() => setPhase("hero"), [])
   const handleBegin = useCallback(() => {
     setPhase("experience")
@@ -29,8 +27,6 @@ export default function Home() {
       document.getElementById("chapter1")?.scrollIntoView({ behavior: "smooth" })
     }, 600)
   }, [])
-
-  if (phase === "loading") return <LoadingScreen onComplete={handleLoadComplete} />
 
   return (
     <>
