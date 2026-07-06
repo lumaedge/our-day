@@ -11,6 +11,7 @@ export function YouSaidYes({ onReveal }: { onReveal: () => void }) {
   const [yourName, setYourName] = useState("")
   const [message, setMessage] = useState("")
   const [date, setDate] = useState("")
+  const [location, setLocation] = useState("")
 
   useEffect(() => {
     try {
@@ -20,6 +21,7 @@ export function YouSaidYes({ onReveal }: { onReveal: () => void }) {
         if (s.herName) setName(s.herName)
         if (s.yourName) setYourName(s.yourName)
         if (s.personalMessage) setMessage(s.personalMessage)
+        if (s.location) setLocation(s.location)
         if (s.date) {
           const d = new Date(s.date)
           setDate(d.toLocaleDateString("en-ZA", { weekday: "long", month: "long", day: "numeric" }))
@@ -120,18 +122,38 @@ export function YouSaidYes({ onReveal }: { onReveal: () => void }) {
               transition={{ duration: 1.2, delay: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
               style={{ originY: 0 }}
             >
+              <motion.p
+                className="text-xs tracking-[0.3em] text-white/20 uppercase mb-6"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.6 }}
+              >
+                You&apos;re invited to
+              </motion.p>
+
+              {location && (
+                <motion.p
+                  className="mb-8 text-xl font-light text-white/70 sm:text-2xl"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 1, delay: 0.9, ease: [0.25, 0.1, 0.25, 1] }}
+                >
+                  {location}
+                </motion.p>
+              )}
+
               <motion.div
                 className="mx-auto mb-8 h-px w-12 bg-white/15"
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
-                transition={{ duration: 1, delay: 0.9 }}
+                transition={{ duration: 1, delay: 1.2 }}
               />
 
               <motion.p
-                className="text-lg font-light leading-relaxed text-white/60 sm:text-xl"
+                className="text-base font-light leading-relaxed text-white/50 sm:text-lg"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 1.2, delay: 0.7 }}
+                transition={{ duration: 1.2, delay: 1 }}
               >
                 &ldquo;{message}&rdquo;
               </motion.p>
@@ -140,7 +162,7 @@ export function YouSaidYes({ onReveal }: { onReveal: () => void }) {
                 className="mx-auto mt-8 h-px w-12 bg-white/15"
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
-                transition={{ duration: 1, delay: 2 }}
+                transition={{ duration: 1, delay: 2.2 }}
               />
 
               {yourName && (
@@ -148,7 +170,7 @@ export function YouSaidYes({ onReveal }: { onReveal: () => void }) {
                   className="mt-6 text-sm text-white/30"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 1.2, delay: 2.4, ease: [0.25, 0.1, 0.25, 1] }}
+                  transition={{ duration: 1.2, delay: 2.6, ease: [0.25, 0.1, 0.25, 1] }}
                 >
                   — {yourName}
                 </motion.p>
