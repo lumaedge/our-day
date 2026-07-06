@@ -1,11 +1,11 @@
 "use client"
 
 import { motion, AnimatePresence } from "framer-motion"
-import { ArrowRight, Heart } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 import { useState, useEffect } from "react"
 
 export function YouSaidYes({ onReveal }: { onReveal: () => void }) {
-  const [phase, setPhase] = useState<"initial" | "note" | "ready">("initial")
+  const [phase, setPhase] = useState<"seal" | "invitation" | "ready">("seal")
   const [name, setName] = useState("Sindiswa")
   const [yourName, setYourName] = useState("")
   const [message, setMessage] = useState("")
@@ -28,8 +28,8 @@ export function YouSaidYes({ onReveal }: { onReveal: () => void }) {
   }, [])
 
   useEffect(() => {
-    const t1 = setTimeout(() => setPhase("note"), 1500)
-    const t2 = setTimeout(() => setPhase("ready"), 4000)
+    const t1 = setTimeout(() => setPhase("invitation"), 2000)
+    const t2 = setTimeout(() => setPhase("ready"), 5000)
     return () => { clearTimeout(t1); clearTimeout(t2) }
   }, [])
 
@@ -38,54 +38,56 @@ export function YouSaidYes({ onReveal }: { onReveal: () => void }) {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(255,255,255,0.02)_0%,_transparent_70%)]" />
 
       <AnimatePresence mode="wait">
-        {phase === "initial" && (
+        {/* Phase 1: Wax seal / invocation */}
+        {phase === "seal" && (
           <motion.div
-            key="you-said-yes"
+            key="seal"
             className="relative z-10"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
+            exit={{ opacity: 0, scale: 0.85 }}
             transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
           >
             <motion.div
-              className="mx-auto mb-8 flex h-16 w-16 items-center justify-center rounded-full border border-white/10 bg-white/[0.03]"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 1, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+              className="mx-auto mb-8"
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ duration: 1.2, delay: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
             >
-              <Heart className="h-6 w-6 text-white/30" />
+              <div className="flex h-20 w-20 items-center justify-center rounded-full border border-white/15 bg-white/[0.03]">
+                <svg viewBox="0 0 40 40" className="h-10 w-10">
+                  <circle cx="20" cy="20" r="18" fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="1" />
+                  <text x="20" y="24" textAnchor="middle" fill="rgba(255,255,255,0.3)" fontSize="16" fontFamily="serif" fontStyle="italic">Y</text>
+                </svg>
+              </div>
             </motion.div>
+
+            <motion.p
+              className="text-xs tracking-[0.35em] text-white/25 uppercase"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 1.2 }}
+            >
+              You&apos;re invited
+            </motion.p>
 
             <motion.h1
-              className="text-4xl font-light text-white/70 sm:text-5xl md:text-6xl"
-              initial={{ opacity: 0, y: 30 }}
+              className="mt-4 text-4xl font-light text-white/70 sm:text-5xl md:text-6xl"
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.2, delay: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+              transition={{ duration: 1.2, delay: 1.8, ease: [0.25, 0.1, 0.25, 1] }}
             >
-              You said yes.
+              {name}
             </motion.h1>
-
-            <motion.div
-              className="mt-4"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1.5, delay: 1.5 }}
-            >
-              <motion.div
-                className="mx-auto h-px w-12 bg-white/20"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 1, delay: 1.8 }}
-              />
-            </motion.div>
           </motion.div>
         )}
 
-        {phase === "note" && (
+        {/* Phase 2: The invitation card — like opening a letter */}
+        {phase === "invitation" && (
           <motion.div
-            key="personal-note"
-            className="relative z-10 max-w-xl"
-            initial={{ opacity: 0, y: 20 }}
+            key="invitation"
+            className="relative z-10 w-full max-w-xl"
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
@@ -99,12 +101,24 @@ export function YouSaidYes({ onReveal }: { onReveal: () => void }) {
               {date}
             </motion.p>
 
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] px-8 py-8 backdrop-blur-sm">
+            <motion.div
+              className="rounded-2xl border border-white/[0.08] bg-white/[0.02] px-8 py-10 backdrop-blur-sm"
+              initial={{ scale: 0.92, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 1.2, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+            >
+              <motion.div
+                className="mx-auto mb-8 h-px w-12 bg-white/15"
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 1, delay: 0.8 }}
+              />
+
               <motion.p
                 className="text-lg font-light leading-relaxed text-white/60 sm:text-xl"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 1.2, delay: 0.5 }}
+                transition={{ duration: 1.2, delay: 0.6 }}
               >
                 &ldquo;{message}&rdquo;
               </motion.p>
@@ -114,18 +128,26 @@ export function YouSaidYes({ onReveal }: { onReveal: () => void }) {
                   className="mt-6 text-sm text-white/30"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ duration: 1, delay: 1.2 }}
+                  transition={{ duration: 1, delay: 1.4 }}
                 >
                   — {yourName}
                 </motion.p>
               )}
-            </div>
+
+              <motion.div
+                className="mx-auto mt-8 h-px w-12 bg-white/15"
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 1, delay: 1.8 }}
+              />
+            </motion.div>
           </motion.div>
         )}
 
+        {/* Phase 3: Open the experience */}
         {phase === "ready" && (
           <motion.div
-            key="reveal-button"
+            key="cta"
             className="relative z-10"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -135,9 +157,9 @@ export function YouSaidYes({ onReveal }: { onReveal: () => void }) {
               className="mb-10 text-lg font-light text-white/40"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 1.2, delay: 0.3 }}
+              transition={{ duration: 1, delay: 0.3 }}
             >
-              Here&apos;s what I&apos;ve been planning.
+              This is the part I&apos;ve been waiting to show you.
             </motion.p>
 
             <motion.button
@@ -149,9 +171,9 @@ export function YouSaidYes({ onReveal }: { onReveal: () => void }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              Show me
+              Open invitation
               <motion.span
-                animate={{ x: [0, 4, 0] }}
+                animate={{ x: [0, 5, 0] }}
                 transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
               >
                 <ArrowRight className="h-4 w-4" />
