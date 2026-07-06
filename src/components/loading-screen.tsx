@@ -34,12 +34,12 @@ export function LoadingScreen({ onComplete }: { onComplete: () => void }) {
   }, [])
 
   useEffect(() => {
-    const t1 = setTimeout(() => setPhase("preparing"), 1000)
-    const t2 = setTimeout(() => setPhase("reveal"), 3000)
+    const t1 = setTimeout(() => setPhase("preparing"), 2000)
+    const t2 = setTimeout(() => setPhase("reveal"), 5000)
     const t3 = setTimeout(() => {
       setPhase("done")
       onComplete()
-    }, 5500)
+    }, 9000)
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3) }
   }, [onComplete])
 
