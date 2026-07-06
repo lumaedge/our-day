@@ -114,7 +114,6 @@ export function MemoryBasket() {
             ref={fileRef}
             type="file"
             accept="image/*"
-            capture="environment"
             multiple
             className="hidden"
             onChange={(e) => e.target.files && handleFiles(e.target.files)}
@@ -176,7 +175,7 @@ export function MemoryBasket() {
               </div>
               <h2 className="mb-2 text-lg font-light text-white/50">No memories yet</h2>
               <p className="max-w-xs text-sm font-light leading-relaxed text-white/25">
-                Start adding photos from your day. Tap the camera button or paste an image.
+                Start adding photos from your day. Tap the Add button or paste an image.
               </p>
             </motion.div>
           )}
