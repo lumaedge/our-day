@@ -1,12 +1,12 @@
 "use client"
 
 import { motion, AnimatePresence } from "framer-motion"
-import { Camera, X, Heart, Clock } from "lucide-react"
+import { Camera, X, Heart, Clock, Loader2 } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
 
 interface MemoryPhoto {
   id: string
-  dataUrl: string
+  url: string
   addedBy: string
   timestamp: number
 }
@@ -16,6 +16,8 @@ export function MemoryBasket() {
   const [herName, setHerName] = useState("Sindiswa")
   const [yourName, setYourName] = useState("You")
   const [selectedPhoto, setSelectedPhoto] = useState<MemoryPhoto | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [uploading, setUploading] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -26,54 +28,57 @@ export function MemoryBasket() {
         if (s.herName) setHerName(s.herName)
         if (s.yourName) setYourName(s.yourName)
       }
-      const saved = localStorage.getItem("our-day-basket")
-      if (saved) setPhotos(JSON.parse(saved))
     } catch {}
+    fetchPhotos()
   }, [])
 
-  const persist = (p: MemoryPhoto[]) => {
-    setPhotos(p)
-    localStorage.setItem("our-day-basket", JSON.stringify(p))
+  const fetchPhotos = async () => {
+    try {
+      const res = await fetch("/api/photos")
+      if (res.ok) setPhotos(await res.json())
+    } catch {} finally {
+      setLoading(false)
+    }
   }
 
-  const addPhoto = (dataUrl: string, addedBy: string) => {
-    const photo: MemoryPhoto = {
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-      dataUrl,
-      addedBy,
-      timestamp: Date.now(),
+  const uploadPhotos = async (files: FileList) => {
+    setUploading(true)
+    for (const file of Array.from(files)) {
+      const formData = new FormData()
+      formData.append("image", file)
+      formData.append("addedBy", yourName)
+      await fetch("/api/photos", { method: "POST", body: formData })
     }
-    persist([photo, ...photos])
+    await fetchPhotos()
+    setUploading(false)
+  }
+
+  const handleDelete = async (id: string) => {
+    await fetch(`/api/photos?id=${id}`, { method: "DELETE" })
+    setPhotos((prev) => prev.filter((p) => p.id !== id))
+    setSelectedPhoto((prev) => (prev?.id === id ? null : prev))
   }
 
   const handleFiles = (files: FileList) => {
-    const reader = new FileReader()
-    let idx = 0
-    reader.onload = () => {
-      addPhoto(reader.result as string, yourName)
-      idx++
-      if (idx < files.length) reader.readAsDataURL(files[idx])
-    }
-    if (files.length > 0) reader.readAsDataURL(files[0])
+    const fileArray = Array.from(files)
+    if (fileArray.length > 0) uploadPhotos(files)
   }
 
   const handlePaste = (e: React.ClipboardEvent) => {
     const items = e.clipboardData?.items
     if (!items) return
-    for (const item of items) {
+    const pastedFiles: File[] = []
+    for (const item of Array.from(items)) {
       if (item.type.startsWith("image/")) {
         const file = item.getAsFile()
-        if (file) {
-          const reader = new FileReader()
-          reader.onload = () => addPhoto(reader.result as string, yourName)
-          reader.readAsDataURL(file)
-        }
+        if (file) pastedFiles.push(file)
       }
     }
-  }
-
-  const handleDelete = (id: string) => {
-    persist(photos.filter((p) => p.id !== id))
+    if (pastedFiles.length > 0) {
+      const dt = new DataTransfer()
+      pastedFiles.forEach((f) => dt.items.add(f))
+      uploadPhotos(dt.files)
+    }
   }
 
   const formatTime = (ts: number) => {
@@ -88,24 +93,22 @@ export function MemoryBasket() {
   }
 
   return (
-    <div
-      className="flex min-h-screen flex-col"
-      onPaste={handlePaste}
-    >
+    <div className="flex min-h-screen flex-col" onPaste={handlePaste}>
       <header className="fixed top-0 left-0 right-0 z-20 border-b border-white/[0.04] bg-black/40 backdrop-blur-2xl">
         <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-4">
           <div>
             <h1 className="text-sm font-light text-white/70">Memory Basket</h1>
             <p className="mt-0.5 text-[10px] tracking-wider text-white/20 uppercase">
-              {photos.length} {photos.length === 1 ? "memory" : "memories"}
+              {loading ? "loading..." : `${photos.length} ${photos.length === 1 ? "memory" : "memories"}`}
             </p>
           </div>
           <button
             onClick={() => fileRef.current?.click()}
-            className="flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-5 py-2 text-xs tracking-wider text-white/50 uppercase backdrop-blur-xl transition-all hover:border-white/30 hover:text-white/80"
+            disabled={uploading}
+            className="flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-5 py-2 text-xs tracking-wider text-white/50 uppercase backdrop-blur-xl transition-all hover:border-white/30 hover:text-white/80 disabled:opacity-40"
           >
-            <Camera className="h-3.5 w-3.5" />
-            Add
+            {uploading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Camera className="h-3.5 w-3.5" />}
+            {uploading ? "Adding..." : "Add"}
           </button>
           <input
             ref={fileRef}
@@ -121,9 +124,13 @@ export function MemoryBasket() {
 
       <div className="flex-1 pt-24 pb-8">
         <div className="mx-auto max-w-4xl px-4 sm:px-6">
-          <AnimatePresence mode="popLayout">
-            {photos.length > 0 ? (
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+          {loading ? (
+            <div className="mt-[30vh] flex justify-center">
+              <Loader2 className="h-6 w-6 animate-spin text-white/20" />
+            </div>
+          ) : photos.length > 0 ? (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+              <AnimatePresence mode="popLayout">
                 {photos.map((photo) => (
                   <motion.div
                     key={photo.id}
@@ -136,7 +143,7 @@ export function MemoryBasket() {
                     onClick={() => setSelectedPhoto(photo)}
                   >
                     <img
-                      src={photo.dataUrl}
+                      src={photo.url}
                       alt=""
                       className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
@@ -155,24 +162,24 @@ export function MemoryBasket() {
                     </button>
                   </motion.div>
                 ))}
+              </AnimatePresence>
+            </div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.3 }}
+              className="mt-[20vh] flex flex-col items-center text-center"
+            >
+              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.02]">
+                <Heart className="h-6 w-6 text-white/20" />
               </div>
-            ) : (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1, delay: 0.3 }}
-                className="mt-[20vh] flex flex-col items-center text-center"
-              >
-                <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.02]">
-                  <Heart className="h-6 w-6 text-white/20" />
-                </div>
-                <h2 className="mb-2 text-lg font-light text-white/50">No memories yet</h2>
-                <p className="max-w-xs text-sm font-light leading-relaxed text-white/25">
-                  Start adding photos from your day. Tap the camera button or paste an image.
-                </p>
-              </motion.div>
-            )}
-          </AnimatePresence>
+              <h2 className="mb-2 text-lg font-light text-white/50">No memories yet</h2>
+              <p className="max-w-xs text-sm font-light leading-relaxed text-white/25">
+                Start adding photos from your day. Tap the camera button or paste an image.
+              </p>
+            </motion.div>
+          )}
         </div>
       </div>
 
@@ -194,7 +201,7 @@ export function MemoryBasket() {
               onClick={(e) => e.stopPropagation()}
             >
               <img
-                src={selectedPhoto.dataUrl}
+                src={selectedPhoto.url}
                 alt=""
                 className="max-h-[75vh] w-auto object-contain"
               />
