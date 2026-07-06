@@ -6,6 +6,7 @@ import { MemoryPhase } from "@/components/memory-phase"
 import { AmbientBackground } from "@/components/ambient-background"
 import { AmbientParticles } from "@/components/ambient-particles"
 import { MusicPlayer } from "@/components/music-player"
+import { getSettings } from "@/lib/settings"
 
 function isOnOrAfterDate(dateStr: string): boolean {
   if (!dateStr) return false
@@ -19,14 +20,10 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem("our-day-settings")
-      if (stored) {
-        const s = JSON.parse(stored)
-        if (s.date) setUnlocked(isOnOrAfterDate(s.date))
-      }
-    } catch {}
-    setLoading(false)
+    getSettings().then((s) => {
+      if (s.date) setUnlocked(isOnOrAfterDate(s.date))
+      setLoading(false)
+    })
   }, [])
 
   if (loading) return null

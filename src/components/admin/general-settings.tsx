@@ -1,13 +1,53 @@
 "use client"
 
+import { useState } from "react"
+import { Cloud, CloudOff, Loader2 } from "lucide-react"
 import type { useAdminStore } from "@/lib/store"
 
 export function GeneralSettings({ store }: { store: ReturnType<typeof useAdminStore> }) {
   const { settings } = store.data
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle")
+
+  const saveToCloud = async () => {
+    setSaveStatus("saving")
+    try {
+      const res = await fetch("/api/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(settings),
+      })
+      if (res.ok) {
+        setSaveStatus("saved")
+        setTimeout(() => setSaveStatus("idle"), 3000)
+      } else {
+        setSaveStatus("error")
+      }
+    } catch {
+      setSaveStatus("error")
+    }
+  }
 
   return (
     <div>
-      <h2 className="mb-6 text-xl font-light text-white/70">General Settings</h2>
+      <div className="mb-6 flex items-center justify-between">
+        <h2 className="text-xl font-light text-white/70">General Settings</h2>
+        <button
+          onClick={saveToCloud}
+          disabled={saveStatus === "saving"}
+          className="flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs tracking-wider text-white/50 uppercase backdrop-blur-xl transition-all hover:border-white/30 hover:text-white/80 disabled:opacity-40"
+        >
+          {saveStatus === "saving" ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          ) : saveStatus === "saved" ? (
+            <Cloud className="h-3.5 w-3.5 text-green-400" />
+          ) : saveStatus === "error" ? (
+            <CloudOff className="h-3.5 w-3.5 text-red-400" />
+          ) : (
+            <Cloud className="h-3.5 w-3.5" />
+          )}
+          {saveStatus === "saving" ? "Saving..." : saveStatus === "saved" ? "Saved" : saveStatus === "error" ? "Failed" : "Save to Cloud"}
+        </button>
+      </div>
 
       <div className="space-y-5">
         <div>

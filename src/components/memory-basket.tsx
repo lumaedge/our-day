@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion"
 import { Camera, X, Heart, Clock, Loader2 } from "lucide-react"
+import { useSettings } from "@/hooks/use-settings"
 import { useState, useEffect, useRef } from "react"
 
 interface MemoryPhoto {
@@ -12,23 +13,14 @@ interface MemoryPhoto {
 }
 
 export function MemoryBasket() {
+  const settings = useSettings()
   const [photos, setPhotos] = useState<MemoryPhoto[]>([])
-  const [herName, setHerName] = useState("Sindiswa")
-  const [yourName, setYourName] = useState("You")
   const [selectedPhoto, setSelectedPhoto] = useState<MemoryPhoto | null>(null)
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem("our-day-settings")
-      if (stored) {
-        const s = JSON.parse(stored)
-        if (s.herName) setHerName(s.herName)
-        if (s.yourName) setYourName(s.yourName)
-      }
-    } catch {}
     fetchPhotos()
   }, [])
 
@@ -46,7 +38,7 @@ export function MemoryBasket() {
     for (const file of Array.from(files)) {
       const formData = new FormData()
       formData.append("image", file)
-      formData.append("addedBy", yourName)
+      formData.append("addedBy", settings.yourName || "You")
       await fetch("/api/photos", { method: "POST", body: formData })
     }
     await fetchPhotos()

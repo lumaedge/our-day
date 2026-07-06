@@ -2,11 +2,13 @@
 
 import { motion } from "framer-motion"
 import { useState, useEffect } from "react"
+import { useSettings } from "@/hooks/use-settings"
 
 function useCountdown(target: string) {
   const [remaining, setRemaining] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0, expired: false })
 
   useEffect(() => {
+    if (!target) return
     const targetDate = new Date(target)
     targetDate.setHours(23, 59, 59, 999)
 
@@ -35,28 +37,17 @@ function useCountdown(target: string) {
 }
 
 export function YouSaidYes() {
-  const [name, setName] = useState("Sindiswa")
-  const [message, setMessage] = useState("")
+  const settings = useSettings()
   const [dateStr, setDateStr] = useState("")
-  const [rawDate, setRawDate] = useState("")
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem("our-day-settings")
-      if (stored) {
-        const s = JSON.parse(stored)
-        if (s.herName) setName(s.herName)
-        if (s.personalMessage) setMessage(s.personalMessage)
-        if (s.date) {
-          setRawDate(s.date)
-          const d = new Date(s.date)
-          setDateStr(d.toLocaleDateString("en-ZA", { weekday: "long", month: "long", day: "numeric" }))
-        }
-      }
-    } catch {}
-  }, [])
+    if (settings.date) {
+      const d = new Date(settings.date)
+      setDateStr(d.toLocaleDateString("en-ZA", { weekday: "long", month: "long", day: "numeric" }))
+    }
+  }, [settings.date])
 
-  const countdown = useCountdown(rawDate)
+  const countdown = useCountdown(settings.date)
 
   return (
     <section className="relative flex min-h-screen flex-col items-center justify-center px-6 text-center overflow-hidden select-none">
@@ -78,7 +69,7 @@ export function YouSaidYes() {
             <svg viewBox="0 0 40 40" className="h-10 w-10">
               <circle cx="20" cy="20" r="18" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
               <text x="20" y="25" textAnchor="middle" fill="rgba(255,255,255,0.25)" fontSize="18" fontFamily="serif" fontStyle="italic">
-                {name.charAt(0)}
+                {settings.herName.charAt(0)}
               </text>
             </svg>
           </div>
@@ -99,7 +90,7 @@ export function YouSaidYes() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, delay: 1.8, ease: [0.25, 0.1, 0.25, 1] }}
         >
-          {name}
+          {settings.herName}
         </motion.h1>
 
         {dateStr && (
@@ -113,14 +104,14 @@ export function YouSaidYes() {
           </motion.p>
         )}
 
-        {message && (
+        {settings.personalMessage && (
           <motion.p
             className="mx-auto mb-12 max-w-md text-base font-light leading-relaxed text-white/40 sm:text-lg"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1.2, delay: 2.8 }}
           >
-            &ldquo;{message}&rdquo;
+            &ldquo;{settings.personalMessage}&rdquo;
           </motion.p>
         )}
 

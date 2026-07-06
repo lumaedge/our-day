@@ -5,6 +5,7 @@ import { MemoryBasket } from "@/components/memory-basket"
 import { ConversationCards } from "@/components/conversation-cards"
 import { useState, useEffect } from "react"
 import { Heart, Send } from "lucide-react"
+import { useSettings } from "@/hooks/use-settings"
 
 interface Note {
   id: string
@@ -14,21 +15,14 @@ interface Note {
 }
 
 function LittleNotes() {
+  const settings = useSettings()
   const [notes, setNotes] = useState<Note[]>([])
   const [input, setInput] = useState("")
-  const [yourName, setYourName] = useState("You")
-  const [herName, setHerName] = useState("Sindiswa")
 
   useEffect(() => {
     try {
       const saved = localStorage.getItem("our-day-notes")
       if (saved) setNotes(JSON.parse(saved))
-      const stored = localStorage.getItem("our-day-settings")
-      if (stored) {
-        const s = JSON.parse(stored)
-        if (s.yourName) setYourName(s.yourName)
-        if (s.herName) setHerName(s.herName)
-      }
     } catch {}
   }, [])
 
@@ -38,7 +32,7 @@ function LittleNotes() {
     const note: Note = {
       id: Date.now().toString(36),
       text,
-      addedBy: yourName || "You",
+      addedBy: settings.yourName || "You",
       timestamp: Date.now(),
     }
     const updated = [note, ...notes]
@@ -109,17 +103,7 @@ function LittleNotes() {
 }
 
 function FinalThankYou() {
-  const [yourName, setYourName] = useState("")
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem("our-day-settings")
-      if (stored) {
-        const s = JSON.parse(stored)
-        if (s.yourName) setYourName(s.yourName)
-      }
-    } catch {}
-  }, [])
+  const settings = useSettings()
 
   return (
     <section className="flex min-h-[60vh] flex-col items-center justify-center px-6 text-center">
@@ -136,9 +120,9 @@ function FinalThankYou() {
         <p className="mb-3 text-lg font-light text-white/50 sm:text-xl">
           Thank you for sharing today with me.
         </p>
-        {yourName && (
+        {settings.yourName && (
           <p className="text-sm font-light text-white/30">
-            — {yourName}
+            — {settings.yourName}
           </p>
         )}
       </motion.div>
