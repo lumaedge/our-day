@@ -40,6 +40,7 @@ export interface SiteSettings {
   password: string
   personalMessage: string
   yourName: string
+  spotifyPlaylist: string
 }
 
 export interface AdminData {
@@ -60,6 +61,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
   password: "admin",
   personalMessage: "I've been looking forward to this. Every detail, every stop, every moment — it's all for you.",
   yourName: "Your person",
+  spotifyPlaylist: "",
 }
 
 const DEFAULT_STOPS: Stop[] = [

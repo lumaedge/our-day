@@ -69,6 +69,17 @@ export function GeneralSettings({ store }: { store: ReturnType<typeof useAdminSt
         </div>
 
         <div>
+          <label className="mb-1.5 block text-xs text-white/30">Spotify Playlist URL</label>
+          <input
+            value={settings.spotifyPlaylist}
+            onChange={(e) => store.updateSettings({ spotifyPlaylist: e.target.value })}
+            placeholder="https://open.spotify.com/playlist/..."
+            className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white/70 placeholder-white/20 focus:border-white/20 focus:outline-none"
+          />
+          <p className="mt-1.5 text-[10px] text-white/20">Paste a playlist link from Spotify. It will appear as a music player during the experience.</p>
+        </div>
+
+        <div>
           <label className="mb-1.5 block text-xs text-white/30">Admin Password</label>
           <input
             type="password"
