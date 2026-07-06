@@ -38,6 +38,8 @@ export interface SiteSettings {
   greeting: string
   published: boolean
   password: string
+  personalMessage: string
+  yourName: string
 }
 
 export interface AdminData {
@@ -56,6 +58,8 @@ const DEFAULT_SETTINGS: SiteSettings = {
   greeting: "Welcome",
   published: false,
   password: "admin",
+  personalMessage: "I've been looking forward to this. Every detail, every stop, every moment — it's all for you.",
+  yourName: "Your person",
 }
 
 const DEFAULT_STOPS: Stop[] = [
@@ -157,7 +161,7 @@ export function useAdminStore() {
 
   const resetAll = useCallback(() => {
     setData({
-      settings: DEFAULT_SETTINGS,
+      settings: { ...DEFAULT_SETTINGS },
       stops: DEFAULT_STOPS,
       memories: [],
       polaroids: [],

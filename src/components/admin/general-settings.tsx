@@ -20,6 +20,16 @@ export function GeneralSettings({ store }: { store: ReturnType<typeof useAdminSt
         </div>
 
         <div>
+          <label className="mb-1.5 block text-xs text-white/30">Your Name</label>
+          <input
+            value={settings.yourName}
+            onChange={(e) => store.updateSettings({ yourName: e.target.value })}
+            placeholder="So she knows who sent this"
+            className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white/70 placeholder-white/20 focus:border-white/20 focus:outline-none"
+          />
+        </div>
+
+        <div>
           <label className="mb-1.5 block text-xs text-white/30">Date</label>
           <input
             type="date"
@@ -35,6 +45,17 @@ export function GeneralSettings({ store }: { store: ReturnType<typeof useAdminSt
             value={settings.location}
             onChange={(e) => store.updateSettings({ location: e.target.value })}
             className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white/70 placeholder-white/20 focus:border-white/20 focus:outline-none"
+          />
+        </div>
+
+        <div>
+          <label className="mb-1.5 block text-xs text-white/30">Personal Message</label>
+          <textarea
+            value={settings.personalMessage}
+            onChange={(e) => store.updateSettings({ personalMessage: e.target.value })}
+            placeholder="A short note she'll see after 'You said yes.'"
+            rows={3}
+            className="w-full resize-none rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white/70 placeholder-white/20 focus:border-white/20 focus:outline-none"
           />
         </div>
 

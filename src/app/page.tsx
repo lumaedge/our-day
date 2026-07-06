@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react"
 import { LoadingScreen } from "@/components/loading-screen"
+import { YouSaidYes } from "@/components/you-said-yes"
 import { HeroSection } from "@/components/hero-section"
 import { Chapter1 } from "@/components/chapter1"
 import { Chapter2 } from "@/components/chapter2"
@@ -18,13 +19,18 @@ import { FinalChapter } from "@/components/final-chapter"
 import { ChapterProgress } from "@/components/chapter-progress"
 
 export default function Home() {
-  const [loaded, setLoaded] = useState(false)
-  const [begun, setBegun] = useState(false)
+  const [phase, setPhase] = useState<"loading" | "intro" | "hero" | "experience">("loading")
 
-  const handleLoadComplete = useCallback(() => setLoaded(true), [])
-  const handleBegin = useCallback(() => setBegun(true), [])
+  const handleLoadComplete = useCallback(() => setPhase("intro"), [])
+  const handleReveal = useCallback(() => setPhase("hero"), [])
+  const handleBegin = useCallback(() => {
+    setPhase("experience")
+    setTimeout(() => {
+      document.getElementById("chapter1")?.scrollIntoView({ behavior: "smooth" })
+    }, 600)
+  }, [])
 
-  if (!loaded) return <LoadingScreen onComplete={handleLoadComplete} />
+  if (phase === "loading") return <LoadingScreen onComplete={handleLoadComplete} />
 
   return (
     <>
@@ -32,11 +38,15 @@ export default function Home() {
       <AmbientParticles />
       <HiddenNotes />
 
-      {!begun ? (
+      {phase === "intro" && <YouSaidYes onReveal={handleReveal} />}
+
+      {phase === "hero" && (
         <div className="snap-container">
           <HeroSection onBegin={handleBegin} />
         </div>
-      ) : (
+      )}
+
+      {phase === "experience" && (
         <>
           <ChapterProgress />
           <main className="snap-container">

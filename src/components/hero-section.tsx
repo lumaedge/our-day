@@ -22,7 +22,6 @@ export function HeroSection({ onBegin }: { onBegin: () => void }) {
       id="hero"
       className="snap-section relative flex min-h-screen flex-col items-center justify-center px-6 text-center"
     >
-      {/* Subtle radial gradient */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(255,255,255,0.03)_0%,_transparent_70%)]" />
 
       <motion.div
@@ -96,7 +95,6 @@ export function HeroSection({ onBegin }: { onBegin: () => void }) {
         </motion.div>
       </motion.div>
 
-      {/* Scroll indicator */}
       <motion.div
         className="absolute bottom-12"
         initial={{ opacity: 0 }}
@@ -108,9 +106,7 @@ export function HeroSection({ onBegin }: { onBegin: () => void }) {
           animate={{ y: [0, 6, 0] }}
           transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
         >
-          <span className="text-[10px] tracking-[0.3em] text-white/15 uppercase">
-            Scroll
-          </span>
+          <span className="text-[10px] tracking-[0.3em] text-white/15 uppercase">Scroll</span>
           <div className="h-8 w-px bg-gradient-to-b from-white/20 to-transparent" />
         </motion.div>
       </motion.div>
