@@ -43,7 +43,7 @@ export function YouSaidYes({ onReveal }: { onReveal: () => void }) {
   const showHint = !locked && step < 2
 
   return (
-    <section className="snap-section relative flex min-h-screen flex-col items-center justify-center px-6 text-center overflow-hidden select-none">
+    <section className="relative flex min-h-screen flex-col items-center justify-center px-6 text-center overflow-hidden select-none">
       {step < 2 && <div className="absolute inset-0 z-20" onClick={advance} />}
 
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(255,255,255,0.02)_0%,_transparent_70%)]" />
